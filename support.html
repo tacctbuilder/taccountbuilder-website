@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support — T-Account Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <span class="logo"><a href="index.html" style="color:white;text-decoration:none;">T-Account Builder</a></span>
+            <div class="nav-links">
+                <a href="support.html">Support</a>
+                <a href="privacy.html">Privacy</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-content">
+            <h1>Support</h1>
+            <p class="updated">We're here to help. Response time is typically within 1 business day.</p>
+
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <h3>What data formats does T-Account Builder support?</h3>
+                <p>T-Account Builder supports two formats: <strong>Split Format</strong> (separate Ledger Debit Amount and Ledger Credit Amount columns) and <strong>Indicator Format</strong> (a D/C indicator column combined with an Amount column). Both are common in Workday, Oracle, SAP, and other ERP exports.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Which ERPs does T-Account Builder work with?</h3>
+                <p>T-Account Builder is compatible with general ledger exports from Workday, Oracle, SAP, and any ERP that produces standard journal entry data in Excel or similar formats. The automatic column detection handles variations in column naming across different systems.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Where does the T-Account Builder button appear in Excel?</h3>
+                <p>The T-Account Builder button appears in the <strong>Home tab</strong> of the Excel ribbon after installation.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Is my financial data stored or transmitted anywhere?</h3>
+                <p>Your data is sent to our API solely to generate your T-account output and is never stored or retained. Our API is stateless — no financial data is written to any database. All transmissions are encrypted via HTTPS. See our <a href="privacy.html">Privacy Policy</a> for full details.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Why does the add-in take a moment to respond the first time?</h3>
+                <p>T-Account Builder uses a cloud API that may take up to 60 seconds to respond on the very first request after a period of inactivity. This is a known behavior on our current hosting plan. Subsequent requests in the same session are fast.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>How do I cancel my subscription?</h3>
+                <p>Subscriptions are managed through Microsoft AppSource. You can cancel at any time through your Microsoft account at <a href="https://account.microsoft.com/services" target="_blank">account.microsoft.com/services</a>.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>My columns aren't being detected correctly. What should I do?</h3>
+                <p>Use the column mapping dropdowns in the add-in to manually select the correct columns for each field. If you believe your column names should be auto-detected, contact us and we'll add support for your ERP's naming conventions.</p>
+            </div>
+
+            <div class="contact-box">
+                <h2>Still need help?</h2>
+                <p>Send us an email and we'll get back to you within 1 business day.</p>
+                <a href="mailto:tacctbuilder@gmail.com" class="cta-button">Email Support</a>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 T-Account Builder. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="support.html">Support</a>
+                <a href="mailto:tacctbuilder@gmail.com">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
