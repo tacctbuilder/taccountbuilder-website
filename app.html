@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try It Free — T-Account Builder</title>
+    <meta name="description" content="Upload your GL or journal entry data and see T-account visualizations instantly in your browser. Free preview, pay only to download the formatted Excel file.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <span class="logo"><a href="index.html" style="color:white;text-decoration:none;">T-Account Builder</a></span>
+            <div class="nav-links">
+                <a href="app.html">Try It Free</a>
+                <a href="support.html">Support</a>
+                <a href="privacy.html">Privacy</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container app-section">
+        <h1>Try It Free</h1>
+        <p class="subtitle">Upload your GL or journal entry data below. Previewing your T-accounts is free — you only pay if you want to download the formatted Excel file.</p>
+
+        <div class="step-card">
+            <h2>1. Upload Your File</h2>
+            <div class="field-row">
+                <input type="file" id="file-input" accept=".csv,.xlsx,.xls">
+            </div>
+            <div class="field-row">
+                <label for="header-row">Header row</label>
+                <input type="number" id="header-row" value="1" min="1">
+                <button class="btn" id="detect-columns-btn" disabled>Detect Columns</button>
+            </div>
+            <div class="status-message" id="upload-status"></div>
+        </div>
+
+        <div class="step-card is-disabled" id="preview-card">
+            <h2>2. Preview Your T-Accounts</h2>
+            <div class="status-message" id="preview-status"></div>
+            <div class="t-account-preview" id="t-account-preview"></div>
+        </div>
+
+        <div class="step-card is-disabled" id="download-card">
+            <h2>3. Download the Formatted Excel File</h2>
+            <p style="margin-bottom:16px;color:#555;font-size:0.95rem;">
+                $9.99 for a bundle of 12 downloads — use them any time.
+            </p>
+            <button class="btn" id="buy-btn">Buy 12 Downloads — $9.99</button>
+            <button class="btn" id="download-btn" style="display:none;">Download Excel</button>
+            <span class="credits-badge" id="credits-badge" style="display:none;"></span>
+            <div class="status-message" id="download-status"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 T-Account Builder. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="support.html">Support</a>
+                <a href="mailto:tacctbuilder@gmail.com">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="vendor/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+/* App page — extends style.css conventions (navy/cyan, card shadows, rounded corners) */
+
+.app-section {
+    padding: 56px 0 96px;
+}
+
+.app-section h1 {
+    font-size: 2rem;
+    color: #0f3460;
+    margin-bottom: 8px;
+}
+
+.app-section .subtitle {
+    color: #555;
+    margin-bottom: 40px;
+    font-size: 1rem;
+}
+
+.step-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+.step-card h2 {
+    font-size: 1.15rem;
+    color: #0f3460;
+    margin-bottom: 16px;
+}
+
+.step-card.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.field-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.field-row label {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.field-row input[type="number"] {
+    width: 70px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+input[type="file"] {
+    font-size: 0.9rem;
+}
+
+.btn {
+    display: inline-block;
+    background: #00b4d8;
+    color: white;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: #0096c7;
+}
+
+.btn:disabled {
+    background: #b0c4d8;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #0f3460;
+}
+
+.btn-secondary:hover {
+    background: #16213e;
+}
+
+.status-message {
+    font-size: 0.9rem;
+    margin-top: 12px;
+}
+
+.status-message.error {
+    color: #c0392b;
+}
+
+.status-message.info {
+    color: #555;
+}
+
+.credits-badge {
+    display: inline-block;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    color: #0f3460;
+    font-weight: 600;
+    margin-left: 12px;
+}
+
+/* T-account preview */
+.t-account-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 8px;
+}
+
+.t-type-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.t-type-header {
+    text-align: center;
+}
+
+.t-type-header .type-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #0f3460;
+}
+
+.t-type-header .type-balance {
+    font-size: 0.95rem;
+    color: #0078d4;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+    display: block;
+}
+
+.t-box {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 16px;
+    min-width: 260px;
+}
+
+.t-box .account-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+    border-bottom: 2px solid #0f3460;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+}
+
+.t-box table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.t-box th {
+    text-align: right;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #ccc;
+    padding: 4px 6px;
+}
+
+.t-box th:first-child,
+.t-box td:first-child {
+    text-align: left;
+}
+
+.t-box td {
+    padding: 4px 6px;
+    text-align: right;
+}
+
+.t-box td:nth-child(2),
+.t-box th:nth-child(2) {
+    border-right: 2px solid #0f3460;
+}
+
+.t-box .balance-row td {
+    border-top: 1px solid #0f3460;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .t-account-preview {
+        flex-direction: column;
+    }
+}
