@@ -119,14 +119,18 @@ input[type="file"] {
 /* T-account preview */
 .t-account-preview {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    align-items: flex-start;
     gap: 24px;
     margin-top: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
 }
 
 .t-type-group {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     gap: 16px;
 }
 
@@ -197,12 +201,6 @@ input[type="file"] {
 .t-box .balance-row td {
     border-top: 1px solid #0f3460;
     font-weight: 700;
-}
-
-@media (max-width: 600px) {
-    .t-account-preview {
-        flex-direction: column;
-    }
 }
 
 /* Column mapping review */
