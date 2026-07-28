@@ -5,10 +5,33 @@ const LOCAL_STORAGE_KEY = "tacct_web_session";
 
 let cachedAllValues = [];
 let cachedHeaderRowIndex = 0;
+let cachedHeaders = [];
 let cachedMapping = {};
 let cachedFormatType = "";
 let cachedRows = [];
 let cachedAccountTypeConfig = [];
+
+const FIELD_LABELS = {
+  journal_number: "Journal Number",
+  ledger_account_type: "Account Type",
+  ledger_account: "Ledger Account",
+  journal: "Journal / Description",
+  accounting_date: "Date",
+  ledger_debit_amount: "Debit Amount",
+  ledger_credit_amount: "Credit Amount",
+  debit_credit_indicator: "Debit/Credit Indicator",
+  amount: "Amount",
+};
+
+const CORE_REQUIRED = new Set(["ledger_account_type", "ledger_account"]);
+const FORMAT_REQUIRED = {
+  combined: new Set(["debit_credit_indicator", "amount"]),
+  separate: new Set(["ledger_debit_amount", "ledger_credit_amount"]),
+};
+
+function isFieldRequired(field, formatType) {
+  return CORE_REQUIRED.has(field) || (FORMAT_REQUIRED[formatType] && FORMAT_REQUIRED[formatType].has(field));
+}
 
 // ---- Pure helpers copied from the Excel add-in's taskpane.js (no Office.js dependency) ----
 
@@ -155,6 +178,9 @@ const fileInput = document.getElementById("file-input");
 const headerRowInput = document.getElementById("header-row");
 const detectColumnsBtn = document.getElementById("detect-columns-btn");
 const uploadStatus = document.getElementById("upload-status");
+const mappingCard = document.getElementById("mapping-card");
+const mappingStatus = document.getElementById("mapping-status");
+const confirmMappingBtn = document.getElementById("confirm-mapping-btn");
 const previewCard = document.getElementById("preview-card");
 const previewStatus = document.getElementById("preview-status");
 const previewContainer = document.getElementById("t-account-preview");
@@ -167,6 +193,77 @@ const downloadStatus = document.getElementById("download-status");
 function setStatus(el, message, type) {
   el.textContent = message;
   el.className = "status-message" + (type ? ` ${type}` : "");
+}
+
+function getSelectedFormatType() {
+  return document.getElementById("format-combined").checked ? "combined" : "separate";
+}
+
+function setFormatToggle(formatType) {
+  if (formatType === "combined") {
+    document.getElementById("format-combined").checked = true;
+  } else {
+    document.getElementById("format-separate").checked = true;
+  }
+}
+
+function renderMappingUI(mapping, formatType, headers) {
+  const container = document.getElementById("mapping-fields");
+  container.innerHTML = "";
+
+  const commonFields = ["journal_number", "ledger_account_type", "ledger_account", "journal", "accounting_date"];
+  const fieldsToShow =
+    formatType === "combined"
+      ? [...commonFields, "debit_credit_indicator", "amount"]
+      : [...commonFields, "ledger_debit_amount", "ledger_credit_amount"];
+
+  for (const field of fieldsToShow) {
+    const div = document.createElement("div");
+    const matchedIndex = mapping[field];
+    div.className = `mapping-field ${matchedIndex !== null && matchedIndex !== undefined ? "matched" : "unmatched"}`;
+
+    const label = document.createElement("label");
+    const required = isFieldRequired(field, formatType);
+    label.innerHTML = `${FIELD_LABELS[field] || field} <span class="${required ? "badge-required" : "badge-optional"}">${required ? "Required" : "Optional"}</span>`;
+    div.appendChild(label);
+
+    const select = document.createElement("select");
+    select.setAttribute("data-field", field);
+
+    const noneOption = document.createElement("option");
+    noneOption.value = "";
+    noneOption.textContent = "-- Not mapped --";
+    select.appendChild(noneOption);
+
+    headers.forEach((header, idx) => {
+      if (!header) return;
+      const option = document.createElement("option");
+      option.value = idx;
+      option.textContent = header.replace(/\n/g, " ");
+      if (idx === matchedIndex) option.selected = true;
+      select.appendChild(option);
+    });
+
+    select.addEventListener("change", () => {
+      div.className = `mapping-field ${select.value ? "matched" : "unmatched"}`;
+    });
+
+    div.appendChild(select);
+    container.appendChild(div);
+  }
+}
+
+function getConfirmedMapping() {
+  const selects = document.querySelectorAll("#mapping-fields select");
+  const mapping = {};
+
+  selects.forEach((select) => {
+    const field = select.getAttribute("data-field");
+    const value = select.value;
+    mapping[field] = value !== "" ? parseInt(value, 10) : null;
+  });
+
+  return mapping;
 }
 
 function getSavedSession() {
@@ -212,6 +309,8 @@ detectColumnsBtn.addEventListener("click", async () => {
   if (!file) return;
 
   setStatus(uploadStatus, "Reading file...", "info");
+  previewCard.classList.add("is-disabled");
+  downloadCard.classList.add("is-disabled");
 
   try {
     const buffer = await file.arrayBuffer();
@@ -220,9 +319,9 @@ detectColumnsBtn.addEventListener("click", async () => {
     cachedAllValues = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true });
 
     cachedHeaderRowIndex = Math.max(parseInt(headerRowInput.value, 10) - 1, 0);
-    const headers = (cachedAllValues[cachedHeaderRowIndex] || []).map((h) => (h || "").toString());
+    cachedHeaders = (cachedAllValues[cachedHeaderRowIndex] || []).map((h) => (h || "").toString());
 
-    if (!headers.length) {
+    if (!cachedHeaders.length) {
       setStatus(uploadStatus, "Could not find any columns at that header row. Check the header row number.", "error");
       return;
     }
@@ -230,40 +329,55 @@ detectColumnsBtn.addEventListener("click", async () => {
     const mapResponse = await fetch(`${API_URL}/map-columns`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ headers }),
+      body: JSON.stringify({ headers: cachedHeaders }),
     });
     const mapResult = await mapResponse.json();
 
     const analyzed = analyzeDataFormat(cachedAllValues, cachedHeaderRowIndex, mapResult.mapping);
     cachedMapping = analyzed.mapping;
-    cachedFormatType = analyzed.format;
+    cachedFormatType = analyzed.format || "separate";
 
-    if (cachedMapping.ledger_account_type === null || cachedMapping.ledger_account_type === undefined) {
-      setStatus(uploadStatus, "Could not detect an Account Type column in your file. Please check your column headers.", "error");
-      return;
-    }
-    if (cachedMapping.ledger_account === null || cachedMapping.ledger_account === undefined) {
-      setStatus(uploadStatus, "Could not detect a Ledger Account column in your file. Please check your column headers.", "error");
-      return;
-    }
-    if (!cachedFormatType) {
-      setStatus(uploadStatus, "Could not detect whether this file uses separate debit/credit columns or a D/C indicator column. Please check your data.", "error");
-      return;
-    }
+    setFormatToggle(cachedFormatType);
+    renderMappingUI(cachedMapping, cachedFormatType, cachedHeaders);
+    setStatus(mappingStatus, "", "");
+    mappingCard.classList.remove("is-disabled");
 
-    cachedAccountTypeConfig = detectAccountTypes(cachedAllValues, cachedHeaderRowIndex, cachedMapping.ledger_account_type);
-    cachedRows = readDataWithMapping(cachedAllValues, cachedHeaderRowIndex, cachedMapping, cachedFormatType);
-
-    if (!cachedRows.length) {
-      setStatus(uploadStatus, "No data rows found below the header row.", "error");
-      return;
-    }
-
-    setStatus(uploadStatus, `Detected ${cachedRows.length} rows across ${cachedAccountTypeConfig.length} account types.`, "info");
-    await generatePreview();
+    setStatus(uploadStatus, "Columns detected. Review the mapping below, then confirm to see your preview.", "info");
   } catch (err) {
     setStatus(uploadStatus, `Error reading file: ${err.message}`, "error");
   }
+});
+
+document.getElementById("format-separate").addEventListener("change", () => {
+  renderMappingUI(getConfirmedMapping(), getSelectedFormatType(), cachedHeaders);
+});
+document.getElementById("format-combined").addEventListener("change", () => {
+  renderMappingUI(getConfirmedMapping(), getSelectedFormatType(), cachedHeaders);
+});
+
+confirmMappingBtn.addEventListener("click", async () => {
+  const mapping = getConfirmedMapping();
+  const formatType = getSelectedFormatType();
+
+  const requiredFields = [...CORE_REQUIRED, ...FORMAT_REQUIRED[formatType]];
+  const missing = requiredFields.filter((f) => mapping[f] === null || mapping[f] === undefined);
+  if (missing.length > 0) {
+    setStatus(mappingStatus, `Please map these required fields: ${missing.map((f) => FIELD_LABELS[f]).join(", ")}`, "error");
+    return;
+  }
+
+  cachedMapping = mapping;
+  cachedFormatType = formatType;
+  cachedAccountTypeConfig = detectAccountTypes(cachedAllValues, cachedHeaderRowIndex, cachedMapping.ledger_account_type);
+  cachedRows = readDataWithMapping(cachedAllValues, cachedHeaderRowIndex, cachedMapping, cachedFormatType);
+
+  if (!cachedRows.length) {
+    setStatus(mappingStatus, "No data rows found below the header row with this mapping.", "error");
+    return;
+  }
+
+  setStatus(mappingStatus, `Mapped ${cachedRows.length} rows across ${cachedAccountTypeConfig.length} account types.`, "info");
+  await generatePreview();
 });
 
 async function generatePreview() {

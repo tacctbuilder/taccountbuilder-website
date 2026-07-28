@@ -42,14 +42,38 @@
             <div class="status-message" id="upload-status"></div>
         </div>
 
+        <div class="step-card is-disabled" id="mapping-card">
+            <h2>2. Review Column Mapping</h2>
+            <p class="mapping-hint">We matched your columns automatically. Check anything marked <strong>Unmatched</strong>, and fix any that look wrong, before generating your preview.</p>
+
+            <div class="format-toggle">
+                <label class="toggle-label">Data Format:</label>
+                <div class="toggle-options">
+                    <label class="toggle-option">
+                        <input type="radio" name="format-type" value="separate" id="format-separate" />
+                        <span>Separate Debit &amp; Credit columns</span>
+                    </label>
+                    <label class="toggle-option">
+                        <input type="radio" name="format-type" value="combined" id="format-combined" />
+                        <span>Combined Debit/Credit indicator + Amount</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="mapping-fields" class="mapping-fields-grid"></div>
+
+            <div class="status-message" id="mapping-status"></div>
+            <button class="btn" id="confirm-mapping-btn">Confirm &amp; Preview</button>
+        </div>
+
         <div class="step-card is-disabled" id="preview-card">
-            <h2>2. Preview Your T-Accounts</h2>
+            <h2>3. Preview Your T-Accounts</h2>
             <div class="status-message" id="preview-status"></div>
             <div class="t-account-preview" id="t-account-preview"></div>
         </div>
 
         <div class="step-card is-disabled" id="download-card">
-            <h2>3. Download the Formatted Excel File</h2>
+            <h2>4. Download the Formatted Excel File</h2>
             <p style="margin-bottom:16px;color:#555;font-size:0.95rem;">
                 $9.99 for a bundle of 12 downloads — use them any time.
             </p>
