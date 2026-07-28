@@ -104,6 +104,14 @@ input[type="file"] {
     color: #555;
 }
 
+.status-message.warning {
+    color: #8a6d00;
+    background: #fff8e1;
+    border: 1px solid #f0d975;
+    border-radius: 6px;
+    padding: 10px 12px;
+}
+
 .credits-badge {
     display: inline-block;
     background: #f8f9fa;
@@ -125,6 +133,16 @@ input[type="file"] {
     margin-top: 8px;
     overflow-x: auto;
     padding-bottom: 8px;
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+    background-attachment: local, local, scroll, scroll;
+    background-image:
+        linear-gradient(to right, #ffffff 30%, rgba(255, 255, 255, 0)),
+        linear-gradient(to left, #ffffff 30%, rgba(255, 255, 255, 0)),
+        linear-gradient(to right, rgba(15, 52, 96, 0.18), rgba(15, 52, 96, 0)),
+        linear-gradient(to left, rgba(15, 52, 96, 0.18), rgba(15, 52, 96, 0));
+    background-position: left center, right center, left center, right center;
 }
 
 .t-type-group {

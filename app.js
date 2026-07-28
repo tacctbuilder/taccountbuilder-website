@@ -376,7 +376,18 @@ confirmMappingBtn.addEventListener("click", async () => {
     return;
   }
 
-  setStatus(mappingStatus, `Mapped ${cachedRows.length} rows across ${cachedAccountTypeConfig.length} account types.`, "info");
+  const blankTypeCount = cachedRows.filter((r) => !r.ledger_account_type.trim()).length;
+  const baseMessage = `Mapped ${cachedRows.length} rows across ${cachedAccountTypeConfig.length} account types.`;
+  if (blankTypeCount > 0) {
+    setStatus(
+      mappingStatus,
+      `${baseMessage} Warning: ${blankTypeCount} row${blankTypeCount === 1 ? "" : "s"} had no Account Type value and will appear in an unlabeled group in the preview — check your source data.`,
+      "warning"
+    );
+  } else {
+    setStatus(mappingStatus, baseMessage, "info");
+  }
+
   await generatePreview();
 });
 
