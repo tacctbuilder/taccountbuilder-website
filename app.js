@@ -178,6 +178,16 @@ function saveSession(session) {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(session));
 }
 
+async function hashCurrentFile() {
+  const payload = JSON.stringify({
+    rows: cachedRows,
+    config: cachedAccountTypeConfig,
+    format: cachedFormatType,
+  });
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(payload));
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 function updateDownloadUI() {
   const session = getSavedSession();
   if (session && session.remaining > 0) {
@@ -362,6 +372,15 @@ downloadBtn.addEventListener("click", async () => {
     return;
   }
 
+  const currentHash = await hashCurrentFile();
+  if (session.lastDownloadHash === currentHash) {
+    const proceed = window.confirm(
+      "You already downloaded this exact file. Download it again and use another credit?"
+    );
+    if (!proceed) return;
+  }
+
+  downloadBtn.disabled = true;
   setStatus(downloadStatus, "Generating your Excel file...", "info");
 
   try {
@@ -401,14 +420,17 @@ downloadBtn.addEventListener("click", async () => {
     a.remove();
     URL.revokeObjectURL(url);
 
+    session.lastDownloadHash = currentHash;
     if (remainingHeader !== null) {
       session.remaining = parseInt(remainingHeader, 10);
-      saveSession(session);
     }
+    saveSession(session);
     updateDownloadUI();
     setStatus(downloadStatus, "Download started.", "info");
   } catch (err) {
     setStatus(downloadStatus, `Error downloading file: ${err.message}`, "error");
+  } finally {
+    downloadBtn.disabled = false;
   }
 });
 
